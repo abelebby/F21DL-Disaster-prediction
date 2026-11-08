@@ -1,0 +1,190 @@
+{
+  "target": {
+    "column": "y",
+    "definition": "log1p(river_discharge_m3s)",
+    "inverse": "expm1",
+    "raw_column_kept_for_evaluation": "river_discharge_m3s"
+  },
+  "split": {
+    "train": [
+      "2023-01-08",
+      "2025-12-31"
+    ],
+    "test": [
+      "2026-01-01",
+      "2026-08-31"
+    ],
+    "note": "Chronological, same dates for all stations. First 7 days per station dropped (warm-up)."
+  },
+  "cv": {
+    "scheme": "expanding window, split by date (not by row)",
+    "folds": [
+      {
+        "name": "fold1",
+        "train_end": "2023-12-31",
+        "val_start": "2024-01-01",
+        "val_end": "2024-12-31"
+      },
+      {
+        "name": "fold2",
+        "train_end": "2024-12-31",
+        "val_start": "2025-01-01",
+        "val_end": "2025-12-31"
+      }
+    ],
+    "helper": "frozen/cv_folds.py: cv_splits(frame), cv_index_pairs(frame)"
+  },
+  "id_columns": [
+    "date",
+    "location"
+  ],
+  "feature_groups": {
+    "weather_same_day": [
+      "precipitation_mm",
+      "soil_moisture_0_100cm_m3m3",
+      "temperature_mean_c",
+      "dew_point_mean_c",
+      "relative_humidity_mean_pct",
+      "wind_speed_max_kmh",
+      "wind_gusts_max_kmh"
+    ],
+    "rain_history": [
+      "precip_sum_3d",
+      "precip_sum_7d"
+    ],
+    "seasonal": [
+      "doy_sin",
+      "doy_cos",
+      "is_monsoon"
+    ],
+    "station": [
+      "station_Bahrabise",
+      "station_Belsot",
+      "station_Bhada_Bridge",
+      "station_Chameliya_Nayalbadi",
+      "station_Chatara",
+      "station_Chisapani",
+      "station_Devghat",
+      "station_Khokana",
+      "station_Kusum",
+      "station_Rasuwagadhi"
+    ],
+    "discharge_history": [
+      "log_q_lag1",
+      "log_q_lag2",
+      "log_q_lag3",
+      "log_q_lag7",
+      "log_q_mean7"
+    ]
+  },
+  "feature_sets": {
+    "with_discharge": [
+      "precipitation_mm",
+      "soil_moisture_0_100cm_m3m3",
+      "temperature_mean_c",
+      "dew_point_mean_c",
+      "relative_humidity_mean_pct",
+      "wind_speed_max_kmh",
+      "wind_gusts_max_kmh",
+      "precip_sum_3d",
+      "precip_sum_7d",
+      "doy_sin",
+      "doy_cos",
+      "is_monsoon",
+      "station_Bahrabise",
+      "station_Belsot",
+      "station_Bhada_Bridge",
+      "station_Chameliya_Nayalbadi",
+      "station_Chatara",
+      "station_Chisapani",
+      "station_Devghat",
+      "station_Khokana",
+      "station_Kusum",
+      "station_Rasuwagadhi",
+      "log_q_lag1",
+      "log_q_lag2",
+      "log_q_lag3",
+      "log_q_lag7",
+      "log_q_mean7"
+    ],
+    "rain_only": [
+      "precipitation_mm",
+      "soil_moisture_0_100cm_m3m3",
+      "temperature_mean_c",
+      "dew_point_mean_c",
+      "relative_humidity_mean_pct",
+      "wind_speed_max_kmh",
+      "wind_gusts_max_kmh",
+      "precip_sum_3d",
+      "precip_sum_7d",
+      "doy_sin",
+      "doy_cos",
+      "is_monsoon",
+      "station_Bahrabise",
+      "station_Belsot",
+      "station_Bhada_Bridge",
+      "station_Chameliya_Nayalbadi",
+      "station_Chatara",
+      "station_Chisapani",
+      "station_Devghat",
+      "station_Khokana",
+      "station_Kusum",
+      "station_Rasuwagadhi"
+    ]
+  },
+  "windows": {
+    "rain_days": [
+      3,
+      7
+    ],
+    "discharge_lags": [
+      1,
+      2,
+      3,
+      7
+    ],
+    "discharge_mean_days": 7
+  },
+  "dropped_columns": {
+    "rain_mm": "Differs from precipitation_mm only via snowfall (mostly Rasuwagadhi).",
+    "precipitation_hours": "Spearman ~0.98 with precipitation_mm.",
+    "wind_direction_dominant_deg": "Circular variable, not examined; excluded.",
+    "river, basin, dhm_station, latitude, longitude, elevation_m": "Station identifiers; covered by station indicator columns."
+  },
+  "scaling": "None applied. If a model needs it (linear, neural), fit the scaler on train only.",
+  "timing": "Features at day t use weather observed on day t and discharge up to t-1, so the task is a one-day-ahead prediction. Day-t rainfall must be available (observed or forecast) when used operationally.",
+  "descriptions": {
+    "precipitation_mm": "Total precipitation on day t (mm).",
+    "soil_moisture_0_100cm_m3m3": "Soil moisture, 0-100 cm layer, day t.",
+    "temperature_mean_c": "Mean air temperature, day t (deg C).",
+    "dew_point_mean_c": "Mean dew point, day t (deg C).",
+    "relative_humidity_mean_pct": "Mean relative humidity, day t (%).",
+    "wind_speed_max_kmh": "Maximum wind speed, day t (km/h).",
+    "wind_gusts_max_kmh": "Maximum wind gust, day t (km/h).",
+    "precip_sum_3d": "Sum of precipitation over days t-2..t (mm), per station.",
+    "precip_sum_7d": "Sum of precipitation over days t-6..t (mm), per station.",
+    "doy_sin": "sin(2*pi*day_of_year/365.25).",
+    "doy_cos": "cos(2*pi*day_of_year/365.25).",
+    "is_monsoon": "1 if month is June to September, else 0.",
+    "log_q_lag1": "log1p(discharge) on day t-1.",
+    "log_q_lag2": "log1p(discharge) on day t-2.",
+    "log_q_lag3": "log1p(discharge) on day t-3.",
+    "log_q_lag7": "log1p(discharge) on day t-7.",
+    "log_q_mean7": "Mean of log1p(discharge) over days t-7..t-1.",
+    "station_Bahrabise": "1 if station is Bahrabise, else 0.",
+    "station_Belsot": "1 if station is Belsot, else 0.",
+    "station_Bhada_Bridge": "1 if station is Bhada Bridge, else 0.",
+    "station_Chameliya_Nayalbadi": "1 if station is Chameliya/Nayalbadi, else 0.",
+    "station_Chatara": "1 if station is Chatara, else 0.",
+    "station_Chisapani": "1 if station is Chisapani, else 0.",
+    "station_Devghat": "1 if station is Devghat, else 0.",
+    "station_Khokana": "1 if station is Khokana, else 0.",
+    "station_Kusum": "1 if station is Kusum, else 0.",
+    "station_Rasuwagadhi": "1 if station is Rasuwagadhi, else 0."
+  },
+  "file_sha256": {
+    "cv_folds.py": "a33f812e7a3b636f96b82051d5a3a53f2f260c79f5c3e396f5ff0cff2535621e",
+    "train.csv": "6ece231b4b8b31bd3ef398f692d9baab649704847eb0c6db3c7a0b8749989d44",
+    "test.csv": "518dac363218e420f1514e4ba519fae1608730f72fc762b7d8401f0087d0b097"
+  }
+}
