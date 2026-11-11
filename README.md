@@ -24,7 +24,7 @@ python -m pip install -r requirements-baselines.txt
 python src/run_baselines.py
 ```
 
-On Abel's Mac, `/opt/anaconda3/bin/python` has the required packages already installed.
+On my computer, `/opt/anaconda3/bin/python` has the required packages already installed.
 
 This evaluates models on 2024/2025 validation folds and runs clustering on training data. It does not score the reserved 2026 test set by default. See [the baseline guide](docs/BASELINES.md) for the final-test command and output descriptions.
 
