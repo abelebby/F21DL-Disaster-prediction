@@ -9,8 +9,9 @@ paste the full prompt you used here as a comment.
 from pathlib import Path
 import pandas as pd
 
-RAW = Path("data/raw/CORRECTED_2023_2026_NEPAL_FLOOD_WEATHER_KAGGLE.csv")
-OUT = Path("data/processed/nepal_flood_clean.csv")
+ROOT = Path(__file__).resolve().parents[1]
+RAW = ROOT / Path("data/raw/CORRECTED_2023_2026_NEPAL_FLOOD_WEATHER_KAGGLE.csv")
+OUT = ROOT / Path("data/processed/nepal_flood_clean.csv")
 
 
 def clean(df: pd.DataFrame) -> pd.DataFrame:

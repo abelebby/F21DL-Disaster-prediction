@@ -1,0 +1,38 @@
+{
+  "with_discharge__linear": {
+    "params": {},
+    "mean_validation_rmse_log": 0.14258516795314155
+  },
+  "with_discharge__tree": {
+    "params": {
+      "max_depth": 10,
+      "min_samples_leaf": 5
+    },
+    "mean_validation_rmse_log": 0.16874160234777838
+  },
+  "with_discharge__forest": {
+    "params": {
+      "n_estimators": 100,
+      "min_samples_leaf": 5
+    },
+    "mean_validation_rmse_log": 0.14625645220326472
+  },
+  "rain_only__linear": {
+    "params": {},
+    "mean_validation_rmse_log": 0.609942890549737
+  },
+  "rain_only__tree": {
+    "params": {
+      "max_depth": null,
+      "min_samples_leaf": 5
+    },
+    "mean_validation_rmse_log": 0.57737386836279
+  },
+  "rain_only__forest": {
+    "params": {
+      "n_estimators": 100,
+      "min_samples_leaf": 1
+    },
+    "mean_validation_rmse_log": 0.4919272967531354
+  }
+}

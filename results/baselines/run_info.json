@@ -1,0 +1,10 @@
+{
+  "seed": 42,
+  "sklearn": "1.5.1",
+  "final_test": true,
+  "input_hashes": {
+    "cv_folds.py": "a33f812e7a3b636f96b82051d5a3a53f2f260c79f5c3e396f5ff0cff2535621e",
+    "train.csv": "6ece231b4b8b31bd3ef398f692d9baab649704847eb0c6db3c7a0b8749989d44",
+    "test.csv": "518dac363218e420f1514e4ba519fae1608730f72fc762b7d8401f0087d0b097"
+  }
+}

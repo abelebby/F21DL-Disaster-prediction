@@ -4,7 +4,8 @@ from pathlib import Path
 import kagglehub
 
 HANDLE = "tejal5kunjir/nepal-flood-and-weather-dataset-2023-2026"
-dest = Path("data/raw")
+ROOT = Path(__file__).resolve().parents[1]
+dest = ROOT / "data" / "raw"
 dest.mkdir(parents=True, exist_ok=True)
 
 src = Path(kagglehub.dataset_download(HANDLE))
