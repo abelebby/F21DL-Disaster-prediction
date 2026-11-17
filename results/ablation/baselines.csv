@@ -1,0 +1,3 @@
+baseline,rmse,mae,r2,rmse_high,rmse_fold1,rmse_fold2
+persistence,0.153,0.052,0.989,0.306,0.158,0.148
+climatology,0.402,0.227,0.927,0.624,0.398,0.407

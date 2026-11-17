@@ -1,0 +1,5 @@
+source,rmse,mae,r2,rmse_high,bias_high_log,precision,recall,f1,episodes,episodes_caught,episode_recall
+with_discharge,0.142,0.057,0.991,0.27,0.046,0.926,0.911,0.918,71,60,0.845
+rain_only,0.497,0.273,0.888,0.629,0.431,0.751,0.477,0.584,71,35,0.493
+persistence,0.153,0.052,0.989,0.302,0.034,0.905,0.906,0.906,71,60,0.845
+climatology,0.402,0.227,0.927,0.642,0.46,0.746,0.39,0.512,71,20,0.282
