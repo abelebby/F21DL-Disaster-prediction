@@ -6,15 +6,20 @@ Task (from the frozen notebook): regression. Target y = log1p(river_discharge_m3
 Everything here uses the frozen files only:
     frozen/train.csv, frozen/test.csv, frozen/cv_folds.py, frozen/feature_config.json
 
-Run from the repo root (or pass --frozen-dir):
-    python3 src/ablation_error_analysis.py
-    python3 src/ablation_error_analysis.py --frozen-dir path/to/frozen
-    python3 src/ablation_error_analysis.py --final-test     # scores the 2026 test set ONCE, at the very end
+Run from the repo root:
+    python3 src/ablation_error_analysis.py --frozen-dir data/frozen --results-dir results/ablation
+    python3 src/ablation_error_analysis.py ... --final-test   # scores the 2026 test set ONCE, at the very end
+
+Aligned with Abel's baselines (src/run_baselines.py, results/baselines/):
+    * Same model families: linear regression, decision tree, random forest.
+    * Hyper-parameters are read from results/baselines/selected_settings.json (his choice by CV).
+    * The error analysis reads his saved validation_predictions.csv, so it analyses the team's
+      actual baseline models. Predictions below zero are clipped to zero, as in his script.
 
 Design choices
     * Ablation and error analysis use ONLY the training period, through the team's two
       expanding-window CV folds (fold1: train 2023 -> validate 2024, fold2: train 2023-24 ->
-      validate 2025). The test set is untouched unless --final-test is given.
+      validate 2025). 
     * Feature groups come straight from feature_config.json, so they match the team's.
     * Two feature sets are studied, as frozen: `with_discharge` (all groups) and `rain_only`
       (no discharge history). Discharge history is almost the answer (autocorrelation ~0.98),
@@ -24,7 +29,7 @@ Design choices
     * Outputs go to results/ (CSV tables and PNG figures).
 
 GenAI disclosure (required by the F20DL brief):
-    "I am doing the ablation and error analysis part of
+    Prompt: "I am doing the ablation and error analysis part of
     our group coursework on flood prediction in Nepal. Help me write a script that
     works on the team's frozen train/test files and CV folds (notebook
     attached) to ablate the feature groups, analyse model errors, and compare
@@ -48,7 +53,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
@@ -58,7 +63,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 SEED = 42
 RAW_TARGET = "river_discharge_m3s"
 FLOOD_QUANTILE = 0.90  # "high-flow" day = above the station's 90th percentile (fold-train only)
-MODEL_NAMES = ["Ridge", "DecisionTree", "RandomForest"]
+MODEL_NAMES = ["linear", "tree", "forest"]  # same names as Abel's baselines
 METRICS = ["rmse", "mae", "r2", "rmse_high"]
 
 
@@ -79,7 +84,7 @@ def load_frozen(frozen_dir):
         if not path.exists() or sha256(path) != expected:
             print(f"WARNING: {name} does not match the frozen hash. Did it change?")
     sys.path.insert(0, str(frozen_dir.resolve()))
-    from cv_folds import cv_splits  # type: ignore  # the team's own fold definition
+    from cv_folds import cv_splits  # the team's own fold definition
 
     # IMPORTANT: do not sort or reset the order of train. cv_splits returns positional indices.
     train = pd.read_csv(frozen_dir / "train.csv", parse_dates=["date"])
@@ -91,23 +96,38 @@ def load_frozen(frozen_dir):
 # ----------------------------------------------------------------------------
 # MODELS AND BASELINES (all predict y = log1p(discharge))
 # ----------------------------------------------------------------------------
-def make_model(name, n_trees):
-    if name == "Ridge":
-        return make_pipeline(StandardScaler(), Ridge(alpha=1.0))
-    if name == "DecisionTree":
-        return DecisionTreeRegressor(max_depth=8, min_samples_leaf=5, random_state=SEED)
-    if name == "RandomForest":
-        return RandomForestRegressor(
-            n_estimators=n_trees, min_samples_leaf=3, n_jobs=-1, random_state=SEED
-        )
+def load_settings(baseline_dir):
+    """Abel's CV-selected hyper-parameters: {'with_discharge__forest': {'params': {...}}, ...}."""
+    path = Path(baseline_dir) / "selected_settings.json"
+    if not path.exists():
+        print(f"NOTE: {path} not found; using scikit-learn defaults for the tree and forest.")
+        return {}
+    return json.loads(path.read_text())
+
+
+def params_for(settings, feature_set, model):
+    key = f"{feature_set}__{model}"
+    if settings and key not in settings:
+        print(f"WARNING: no tuned settings for {key}; using defaults")
+    return dict(settings.get(key, {}).get("params", {}))
+
+
+def make_model(name, params):
+    if name == "linear":
+        return make_pipeline(StandardScaler(), LinearRegression())
+    if name == "tree":
+        return DecisionTreeRegressor(random_state=SEED, **params)
+    if name == "forest":
+        params = {"n_estimators": 100, **params}
+        return RandomForestRegressor(random_state=SEED, n_jobs=-1, **params)
     raise ValueError(name)
 
 
-def model_predictor(name, cols, n_trees):
+def model_predictor(name, cols, params):
     def predict(fit, hold):
-        model = make_model(name, n_trees)
+        model = make_model(name, params)
         model.fit(fit[cols], fit["y"])
-        return model.predict(hold[cols])
+        return np.clip(model.predict(hold[cols]), 0, None)  # log discharge cannot be negative
 
     return predict
 
@@ -189,22 +209,25 @@ def reference_of(setting):
     return "full"
 
 
-def run_ablation(train, folds, config, n_trees):
+def run_ablation(train, folds, config, settings):
     groups = config["feature_groups"]
-    settings = build_settings(list(groups))
+    ablation_settings = build_settings(list(groups))  # NOT "settings": that is Abel's tuned params
     rows = []
     print("\nRunning ablations on the CV folds (validation years 2024 and 2025)...")
     for model_name in MODEL_NAMES:
-        for setting, used in settings.items():
+        for setting, used in ablation_settings.items():
             cols = [c for g in used for c in groups[g]]
-            frame = run_folds(train, folds, model_predictor(model_name, cols, n_trees))
+            # use Abel's tuned settings for the matching feature set
+            fs = "with_discharge" if "discharge_history" in used else "rain_only"
+            frame = run_folds(train, folds,
+                              model_predictor(model_name, cols, params_for(settings, fs, model_name)))
             for fold, sc in fold_scores(frame).items():
                 rows.append(
                     {"model": model_name, "setting": setting, "n_features": len(cols),
                      "fold": fold, **sc}
                 )
             mean_rmse = np.mean([r["rmse"] for r in rows[-len(folds):]])
-            print(f"  {model_name:<13} {setting:<36} rmse={mean_rmse:.3f}")
+            print(f"  {model_name:<8} {setting:<36} rmse={mean_rmse:.3f}")
     runs = pd.DataFrame(rows)
 
     summary = runs.groupby(["model", "setting", "n_features"], as_index=False)[METRICS].mean()
@@ -292,26 +315,53 @@ def flood_detection(frame):
             "episode_recall": float(episodes.mean()) if len(episodes) else np.nan}
 
 
-def error_analysis(train, folds, summary, config, n_trees, results_dir):
-    groups = config["feature_groups"]
+def load_abel_predictions(baseline_dir):
+    path = Path(baseline_dir) / "validation_predictions.csv"
+    if not path.exists():
+        raise SystemExit(f"{path} not found. Run src/run_baselines.py first (Abel's script).")
+    return pd.read_csv(path, parse_dates=["date"])
+
+
+def consistency_check(summary, preds, settings):
+    """My recomputed full-feature CV RMSE should match Abel's saved predictions."""
+    print("\nCheck against Abel's saved predictions (full feature set, CV RMSE, log scale):")
+    for m in MODEL_NAMES:
+        sub = preds[(preds["model"] == m) & (preds["feature_set"] == "with_discharge")]
+        theirs = float(np.sqrt(np.mean((sub["y"] - sub["prediction_log"]) ** 2)))
+        mine = float(summary[(summary["model"] == m) & (summary["setting"] == "full")]["rmse"].iloc[0])
+        flag = "" if abs(mine - theirs) < 0.004 else "   <-- differs; check settings"
+        print(f"  {m:<7} mine={mine:.4f}  abel={theirs:.4f}  params={params_for(settings, 'with_discharge', m)}{flag}")
+
+
+def error_analysis(train, folds, preds, config, settings, results_dir):
+    # high-flow threshold per (fold, station) from the fold's TRAINING rows only
+    thr = {name: fold_thresholds(train.iloc[tr]) for name, tr, va in folds}
+    preds = preds.copy()
+    preds["thr"] = [thr[f][l] for f, l in zip(preds["fold"], preds["location"])]
+    preds["high"] = preds[RAW_TARGET] > preds["thr"]
+    preds["pred"] = preds["prediction_log"]
+    preds["month"] = preds["date"].dt.month
+
+    def rows(model, feature_set):
+        return preds[(preds["model"] == model) & (preds["feature_set"] == feature_set)]
+
+    # all six models + the two references
+    frames = {f"{fs}:{m}": rows(m, fs) for fs in ["with_discharge", "rain_only"] for m in MODEL_NAMES}
+    for ref in ["persistence", "climatology"]:
+        frames[ref] = preds[preds["model"] == ref]
+
+    # best model per feature set, by CV RMSE
     best = {}
-    for label, setting in [("with_discharge", "full"), ("rain_only", "drop_discharge_history")]:
-        sub = summary[summary["setting"] == setting].sort_values("rmse")
-        # feature columns of this set come from the frozen config
-        best[label] = (sub.iloc[0]["model"], config["feature_sets"][label])
-    print("\nError analysis: best model per feature set (by CV RMSE):",
-          {k: v[0] for k, v in best.items()})
+    for fs in ["with_discharge", "rain_only"]:
+        rm = {m: score(rows(m, fs)["y"], rows(m, fs)["pred"], rows(m, fs)["high"])["rmse"]
+              for m in MODEL_NAMES}
+        best[fs] = min(rm, key=rm.get)
+    print("\nError analysis (Abel's validation predictions). Best model per feature set:", best)
+    named = {"with_discharge": frames[f"with_discharge:{best['with_discharge']}"],
+             "rain_only": frames[f"rain_only:{best['rain_only']}"],
+             "persistence": frames["persistence"], "climatology": frames["climatology"]}
 
-    frames = {
-        "with_discharge": run_folds(train, folds, model_predictor(best["with_discharge"][0],
-                                                                  best["with_discharge"][1], n_trees)),
-        "rain_only": run_folds(train, folds, model_predictor(best["rain_only"][0],
-                                                             best["rain_only"][1], n_trees)),
-        "persistence": run_folds(train, folds, persistence_predictor),
-        "climatology": run_folds(train, folds, climatology_predictor),
-    }
-
-    # 1. Overall and flood detection
+    # 1. Overall and flood detection (every model)
     overall = []
     for name, fr in frames.items():
         row = {"source": name, **score(fr["y"], fr["pred"], fr["high"])}
@@ -328,7 +378,7 @@ def error_analysis(train, folds, summary, config, n_trees, results_dir):
     by_station = pd.DataFrame({
         n: fr.groupby("location").apply(lambda g: score(g["y"], g["pred"], g["high"])["rmse"],
                                         include_groups=False)
-        for n, fr in frames.items()
+        for n, fr in named.items()
     }).round(3)
     by_station.to_csv(results_dir / "error_by_station.csv")
     print("\nRMSE by station:\n", by_station.to_string())
@@ -337,31 +387,31 @@ def error_analysis(train, folds, summary, config, n_trees, results_dir):
     by_month = pd.DataFrame({
         n: fr.groupby("month").apply(lambda g: score(g["y"], g["pred"], g["high"])["rmse"],
                                      include_groups=False)
-        for n, fr in frames.items()
+        for n, fr in named.items()
     }).round(3)
     by_month.to_csv(results_dir / "error_by_month.csv")
     print("\nRMSE by month:\n", by_month.to_string())
 
-    # 4. Largest errors for the two models
+    # 4. Largest errors for the two best models
     for label in ["with_discharge", "rain_only"]:
-        fr = frames[label].copy()
+        fr = named[label].copy()
         fr["pred_m3s"] = np.expm1(fr["pred"])
         fr["abs_error_log"] = (fr["y"] - fr["pred"]).abs()
         worst = fr.sort_values("abs_error_log", ascending=False).head(30)[
             ["date", "location", RAW_TARGET, "pred_m3s", "abs_error_log", "high"]
-        ]
+        ].copy()
         worst[["pred_m3s", "abs_error_log"]] = worst[["pred_m3s", "abs_error_log"]].round(2)
         worst.to_csv(results_dir / f"worst_predictions_{label}.csv", index=False)
-        print(f"\nLargest errors, {label}:\n", worst.head(10).to_string(index=False))
+        print(f"\nLargest errors, {label} ({best[label]}):\n", worst.head(10).to_string(index=False))
 
     # 5. Figures
     fig, axes = plt.subplots(1, 2, figsize=(11, 5), sharex=True, sharey=True)
     for ax, label in zip(axes, ["with_discharge", "rain_only"]):
-        fr = frames[label]
+        fr = named[label]
         ax.scatter(fr["y"], fr["pred"], s=4, alpha=0.3)
         lim = [0, max(fr["y"].max(), fr["pred"].max())]
         ax.plot(lim, lim, "r--")
-        ax.set_title(f"{label} ({best[label][0]})")
+        ax.set_title(f"{label} ({best[label]})")
         ax.set_xlabel("True log1p(discharge)")
     axes[0].set_ylabel("Predicted")
     plt.tight_layout()
@@ -393,13 +443,16 @@ def error_analysis(train, folds, summary, config, n_trees, results_dir):
 # ----------------------------------------------------------------------------
 # FINAL TEST (only with --final-test; do this once, at the very end)
 # ----------------------------------------------------------------------------
-def final_test(train, test, best, n_trees, results_dir):
+def final_test(train, test, best, config, settings, results_dir):
     print("\nFINAL TEST (2026-01-01 to 2026-08-31). Score this once; do not tune on it.")
     thr = fold_thresholds(train)
     test = test.copy()
     test["high"] = test[RAW_TARGET] > test["location"].map(thr)
     rows = []
-    entries = {label: model_predictor(m, cols, n_trees) for label, (m, cols) in best.items()}
+    entries = {
+        label: model_predictor(m, config["feature_sets"][label], params_for(settings, label, m))
+        for label, m in best.items()
+    }
     entries["persistence"] = persistence_predictor
     entries["climatology"] = climatology_predictor
     for name, predictor in entries.items():
@@ -417,12 +470,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--frozen-dir", default="frozen")
     ap.add_argument("--results-dir", default="results")
-    ap.add_argument("--n-trees", type=int, default=200)
+    ap.add_argument("--baseline-dir", default="results/baselines",
+                    help="Abel's outputs: selected_settings.json and validation_predictions.csv")
     ap.add_argument("--final-test", action="store_true")
     args = ap.parse_args()
 
     results_dir = Path(args.results_dir)
-    results_dir.mkdir(exist_ok=True)
+    results_dir.mkdir(parents=True, exist_ok=True)
     np.random.seed(SEED)
 
     config, train, test, folds = load_frozen(args.frozen_dir)
@@ -437,7 +491,9 @@ def main():
     print("\nBaselines (mean over CV folds, log scale):")
     print(baselines.round(3).to_string(index=False))
 
-    summary = run_ablation(train, folds, config, args.n_trees)
+    settings = load_settings(args.baseline_dir)
+    preds = load_abel_predictions(args.baseline_dir)
+    summary = run_ablation(train, folds, config, settings)
     summary.round(4).to_csv(results_dir / "ablation_results.csv", index=False)
     plot_ablation(summary, baselines, results_dir)
 
@@ -446,10 +502,11 @@ def main():
     print(drops.pivot(index="setting", columns="model", values="delta_rmse").round(3).to_string())
     full = summary[summary["setting"] == "full"].set_index("model")["rmse"].round(3)
     print("\nFull-feature CV RMSE:", full.to_dict())
+    consistency_check(summary, preds, settings)
 
-    best = error_analysis(train, folds, summary, config, args.n_trees, results_dir)
+    best = error_analysis(train, folds, preds, config, settings, results_dir)
     if args.final_test:
-        final_test(train, test, best, args.n_trees, results_dir)
+        final_test(train, test, best, config, settings, results_dir)
     print(f"\nDone. Tables and figures saved in {results_dir}/")
 
 
