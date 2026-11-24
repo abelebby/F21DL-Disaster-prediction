@@ -1,0 +1,4 @@
+-r requirements-baselines.txt
+numpy>=1.26,<2
+tensorflow>=2.16,<2.19
+ml-dtypes>=0.4,<0.5

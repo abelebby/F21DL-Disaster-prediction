@@ -14,8 +14,10 @@ Compare standard regression models and neural networks using prepared Nepal weat
 | `results/ablation/` | Maheen's ablation tables, error summaries and figures |
 | `docs/ABLATION.md` | How to run Maheen's analysis using Abel's baseline outputs |
 | `docs/ABEL_REPORT_SECTION.md` | Abel's report contribution |
-| `MLP.py`, `CNN.py` | Louis's tabular neural-network experiments |
-| `CNN 2D.py` | Separate image experiment requiring the external flood10k dataset |
+| `MLP code.py`, `2D-CNN code.py` | Louis's next-day high-flow neural networks |
+| `src/run_high_flow_baselines.py` | Matched traditional classifiers for the neural comparison |
+| `results/high_flow/` | Revised classification metrics, predictions and figures |
+| `docs/NEURAL_NETWORKS.md` | Shared classification setup and run instructions |
 | `docs/BASELINES.md` | Instructions and interpretation notes for Abel's work |
 | `docs/legacy/` | Preserved original placeholder files |
 | `requirements-baselines.txt` | Python dependencies for baselines and clustering |
@@ -48,7 +50,7 @@ The analysis reads `data/frozen/` and Abel's selected settings and validation pr
 
 Pad's cleaning script is `src/clean_data.py`; Hann's prepared data and notebook are listed above. Downloading raw data requires `kagglehub`; running the preparation notebook requires Jupyter. The existing cleaned and frozen data are sufficient for the baseline and ablation workflows; downloading raw data again is optional.
 
-Louis's `MLP.py` and `CNN.py` read `data/processed/nepal_flood_clean.csv` and additionally require TensorFlow. They use their own feature construction, targets and splits, so their scores cannot be ranked directly against the frozen regression experiments. Despite its header, `CNN.py` uses Conv2D layers. `CNN 2D.py` is a separate image experiment: it requires an external `flood10k/` image directory that is not supplied in this repository and moves images into split folders when run.
+Louis's replacement scripts use the existing cleaned CSV and require no image dataset. Their MLP and 2D-CNN predict next-day statistical high flow; use the matched classifiers for direct comparison. See [neural-network instructions](docs/NEURAL_NETWORKS.md). This remains a separate experiment from the frozen same-day regression models. The superseded `MLP.py`, `CNN.py` and image-based `CNN 2D.py` have been removed with Louis's permission; previous versions remain in Git history.
 
 The optional high-flow proxy work is preserved in `src/build_threshold_dataset.py` and `data/derived/thresholds/`. These labels are not confirmed flood observations and are separate from the regression report results.
 

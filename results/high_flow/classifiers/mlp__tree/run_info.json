@@ -1,0 +1,66 @@
+{
+  "model": "mlp__tree",
+  "seed": 42,
+  "target": "next-day training-station 95th-percentile high flow (not confirmed flood)",
+  "features": [
+    "precipitation_mm",
+    "rain1",
+    "rain2",
+    "rain3d",
+    "rain7d",
+    "soil_moisture_0_100cm_m3m3",
+    "precipitation_hours",
+    "relative_humidity_mean_pct",
+    "monthSin",
+    "monthCos",
+    "ratioToday",
+    "ratioYesterday"
+  ],
+  "input_sha256": "5b2467ac6944ed1ab38adfb5756a0b56b8e0082e3a00bdfa18d43655a69144bc",
+  "python": "3.12.7",
+  "numpy": "1.26.4",
+  "pandas": "2.2.2",
+  "sklearn": "1.5.1",
+  "splits": {
+    "train": {
+      "rows": 8510,
+      "feature_start": "2023-01-07",
+      "feature_end": "2025-05-06",
+      "target_start": "2023-01-08",
+      "target_end": "2025-05-07",
+      "positives": 426
+    },
+    "val": {
+      "rows": 2120,
+      "feature_start": "2025-05-08",
+      "feature_end": "2025-12-05",
+      "target_start": "2025-05-09",
+      "target_end": "2025-12-06",
+      "positives": 236
+    },
+    "test": {
+      "rows": 2670,
+      "feature_start": "2025-12-07",
+      "feature_end": "2026-08-30",
+      "target_start": "2025-12-08",
+      "target_end": "2026-08-31",
+      "positives": 47
+    }
+  },
+  "parameters": {
+    "ccp_alpha": 0.0,
+    "class_weight": null,
+    "criterion": "gini",
+    "max_depth": 5,
+    "max_features": null,
+    "max_leaf_nodes": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 5,
+    "min_samples_split": 2,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "random_state": 42,
+    "splitter": "best"
+  },
+  "feature_set": "mlp"
+}

@@ -30,3 +30,7 @@ Regenerated baseline validation/test scores, predictions and cluster profiles/se
 The retrained `ablation_results.csv` did not match exactly: the maximum absolute difference in mean log-RMSE was 0.0040, in high-flow log-RMSE 0.0180, and in delta log-RMSE 0.0041. The existing submitted CSV and figures are preserved. The cause is not established; package versions or the original run conditions need comparison before replacing these results. The verification environment used scikit-learn 1.5.1. This is a numerical reproducibility limitation, not missing code.
 
 All project Python files passed syntax parsing, frozen-input SHA-256 hashes matched their recorded values, and Git whitespace checks passed with existing CRLF line endings recognised. Neural training was not executed for the dependency reasons above.
+
+## Follow-up — 25 November 2026
+
+Louis's `Code-MLP-and-2D-CNN` branch (`3f25a6d`) was merged. With permission, the superseded `MLP.py`, `CNN.py` and `CNN 2D.py` were removed in favour of `MLP code.py` and `2D-CNN code.py`. Their history remains accessible. Both replacements now read the existing cleaned CSV, share corrected temporal splits and export results. TensorFlow was installed in an isolated verification environment; both networks completed training and saved-model reload checks. Matched traditional classifiers and a validated combined comparison were added. See `docs/NEURAL_NETWORKS.md` for the setup and results. Abel's original baseline/clustering results, Maheen's ablation/error-analysis results and Hann's frozen inputs were unchanged.

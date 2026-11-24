@@ -1,0 +1,40 @@
+{
+  "model": "persistence",
+  "seed": 42,
+  "target": "next-day training-station 95th-percentile high flow (not confirmed flood)",
+  "features": [
+    "ratioToday"
+  ],
+  "input_sha256": "5b2467ac6944ed1ab38adfb5756a0b56b8e0082e3a00bdfa18d43655a69144bc",
+  "python": "3.12.7",
+  "numpy": "1.26.4",
+  "pandas": "2.2.2",
+  "sklearn": "1.5.1",
+  "splits": {
+    "train": {
+      "rows": 8510,
+      "feature_start": "2023-01-07",
+      "feature_end": "2025-05-06",
+      "target_start": "2023-01-08",
+      "target_end": "2025-05-07",
+      "positives": 426
+    },
+    "val": {
+      "rows": 2120,
+      "feature_start": "2025-05-08",
+      "feature_end": "2025-12-05",
+      "target_start": "2025-05-09",
+      "target_end": "2025-12-06",
+      "positives": 236
+    },
+    "test": {
+      "rows": 2670,
+      "feature_start": "2025-12-07",
+      "feature_end": "2026-08-30",
+      "target_start": "2025-12-08",
+      "target_end": "2026-08-31",
+      "positives": 47
+    }
+  },
+  "score_description": "today discharge / station threshold; not a probability"
+}

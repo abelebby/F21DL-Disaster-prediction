@@ -8,3 +8,6 @@ data/raw/
 
 results/baselines/*.joblib
 .DS_Store
+
+results/high_flow/**/*.keras
+results/high_flow/**/*.joblib

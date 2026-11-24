@@ -1,0 +1,72 @@
+{
+  "model": "cnn__logistic",
+  "seed": 42,
+  "target": "next-day training-station 95th-percentile high flow (not confirmed flood)",
+  "features": [
+    "rain_3",
+    "hours_3",
+    "soil_3",
+    "ratio_3",
+    "rain_2",
+    "hours_2",
+    "soil_2",
+    "ratio_2",
+    "rain_1",
+    "hours_1",
+    "soil_1",
+    "ratio_1",
+    "precipitation_mm",
+    "precipitation_hours",
+    "soil_moisture_0_100cm_m3m3",
+    "ratioToday"
+  ],
+  "input_sha256": "5b2467ac6944ed1ab38adfb5756a0b56b8e0082e3a00bdfa18d43655a69144bc",
+  "python": "3.12.7",
+  "numpy": "1.26.4",
+  "pandas": "2.2.2",
+  "sklearn": "1.5.1",
+  "splits": {
+    "train": {
+      "rows": 8510,
+      "feature_start": "2023-01-07",
+      "feature_end": "2025-05-06",
+      "target_start": "2023-01-08",
+      "target_end": "2025-05-07",
+      "positives": 426
+    },
+    "val": {
+      "rows": 2120,
+      "feature_start": "2025-05-08",
+      "feature_end": "2025-12-05",
+      "target_start": "2025-05-09",
+      "target_end": "2025-12-06",
+      "positives": 236
+    },
+    "test": {
+      "rows": 2670,
+      "feature_start": "2025-12-07",
+      "feature_end": "2026-08-30",
+      "target_start": "2025-12-08",
+      "target_end": "2026-08-31",
+      "positives": 47
+    }
+  },
+  "parameters": {
+    "C": 1.0,
+    "class_weight": null,
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": null,
+    "max_iter": 2000,
+    "multi_class": "deprecated",
+    "n_jobs": null,
+    "penalty": "l2",
+    "random_state": 42,
+    "solver": "lbfgs",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "feature_set": "cnn"
+}
