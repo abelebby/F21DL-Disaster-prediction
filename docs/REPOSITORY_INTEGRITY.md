@@ -20,3 +20,13 @@ Reviewed GitHub `origin/main` at `13d1aa0` against Abel's original baseline comm
 ## Scope limits
 
 This review covers files in the fetched Git history and current checkout, not uncommitted work on other people's machines. Fitted baseline `.joblib` files are intentionally ignored by Git and can be regenerated. The external `flood10k/` image dataset is not included; `CNN 2D.py` depends on it. TensorFlow is unavailable in the verification environment, so neural training has not been verified.
+
+## Validation
+
+Both complete workflows ran successfully in an isolated temporary copy: `python src/run_baselines.py --final-test` and `python src/ablation_error_analysis.py`. Original result files were not overwritten.
+
+Regenerated baseline validation/test scores, predictions and cluster profiles/selection matched the checked-in CSVs within floating-point tolerance. Maheen's reference baselines, error summary, station/month tables and both worst-prediction tables also matched.
+
+The retrained `ablation_results.csv` did not match exactly: the maximum absolute difference in mean log-RMSE was 0.0040, in high-flow log-RMSE 0.0180, and in delta log-RMSE 0.0041. The existing submitted CSV and figures are preserved. The cause is not established; package versions or the original run conditions need comparison before replacing these results. The verification environment used scikit-learn 1.5.1. This is a numerical reproducibility limitation, not missing code.
+
+All project Python files passed syntax parsing, frozen-input SHA-256 hashes matched their recorded values, and Git whitespace checks passed with existing CRLF line endings recognised. Neural training was not executed for the dependency reasons above.
