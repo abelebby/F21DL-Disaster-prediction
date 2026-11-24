@@ -1,5 +1,5 @@
 """Create high-flow proxy labels, NOT confirmed flood labels.
-AI-assisted implementation requested by Abel. Frozen inputs are never modified.
+AI was used in implementation as requested by abel. But the Frozen inputs are never modified.
 """
 from pathlib import Path
 import hashlib
