@@ -22,8 +22,6 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def validate(df: pd.DataFrame) -> None:
-    """Sanity checks. If one fails, investigate it (don't silence it);
-    it is a finding for your report."""
     print("Shape:", df.shape)
     print("Nulls:", int(df.isna().sum().sum()))
     print("Date range:", df["date"].min().date(), "->", df["date"].max().date())
