@@ -1,7 +1,6 @@
 """Shared next-day high-flow experiment for Louis's networks and matched classifiers.
 
-High flow means above a station's training-only 95th percentile, not verified flooding.
-AI assistance: repository integration, boundary correction and result exports.
+Ai was used to clarify the structure: High flow means above a station's training-only 95th percentile, not verified flooding.
 """
 import hashlib
 import json
