@@ -1,0 +1,4 @@
+location,reported_station_id,reported_period_peak_gauge_m,window_start,window_end,evidence_type,source_url,source_section
+Chatara,695,11.83,2024-09-27,2024-09-29,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf,"Section 6 and Table 4, PDF page 6; overall report window used"
+Devghat,450,13.62,2024-09-27,2024-09-29,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf,"Section 6 and Table 4, PDF page 6; overall report window used"
+Khokana,550.05,6.16,2024-09-27,2024-09-29,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf,"Section 6 and Table 4, PDF page 6; overall report window used"

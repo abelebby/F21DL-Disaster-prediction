@@ -1,0 +1,10 @@
+date,location,river_discharge_m3s,evidence_type,source_url
+2024-09-27,Chatara,15.0,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf
+2024-09-28,Chatara,23.27,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf
+2024-09-29,Chatara,11.88,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf
+2024-09-27,Devghat,4.75,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf
+2024-09-28,Devghat,10.3,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf
+2024-09-29,Devghat,19.56,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf
+2024-09-27,Khokana,14.38,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf
+2024-09-28,Khokana,57.61,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf
+2024-09-29,Khokana,38.81,reported_flood_event_window_not_daily_label,https://dhm.gov.np/uploads/dhm/downloads/Situational_Report_on_Extreme_Precipitation_and_Flooding_Event_of_27-29_September_2024.pdf

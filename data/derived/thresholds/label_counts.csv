@@ -1,0 +1,21 @@
+location,rows,positives_p90,positives_p95,positives_p99,split
+Bahrabise,1089,109,55,11,train
+Belsot,1089,108,55,11,train
+Bhada Bridge,1089,108,55,11,train
+Chameliya/Nayalbadi,1089,109,55,11,train
+Chatara,1089,108,54,11,train
+Chisapani,1089,107,55,11,train
+Devghat,1089,109,54,11,train
+Khokana,1089,109,55,11,train
+Kusum,1089,109,55,11,train
+Rasuwagadhi,1089,109,55,11,train
+Bahrabise,243,38,23,0,test
+Belsot,243,16,0,0,test
+Bhada Bridge,243,12,1,0,test
+Chameliya/Nayalbadi,243,0,0,0,test
+Chatara,243,8,4,0,test
+Chisapani,243,1,0,0,test
+Devghat,243,16,0,0,test
+Khokana,243,22,10,1,test
+Kusum,243,22,7,0,test
+Rasuwagadhi,243,44,11,0,test
