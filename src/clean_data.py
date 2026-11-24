@@ -1,7 +1,7 @@
-"""Clean the raw Nepal flood/weather CSV -> data/processed/nepal_flood_clean.csv.
 
-Cleaning only: no scaling, no log-transform, no thresholds, no lag features.
-Those depend on the train/test split and are done later to avoid leakage.
+"""
+prompt : generate a data cleaning script for this dataset with cleaning only , no scaling , no threshold , no lag features.   
+
 """
 from pathlib import Path
 import pandas as pd

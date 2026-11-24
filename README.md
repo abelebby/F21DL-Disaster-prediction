@@ -1,3 +1,14 @@
+
+# F20DL-DISASTER-PREDICTION
+packages required :
+ pandas 
+numpy
+scikit-learn
+matplotlib
+seaborn
+kagglehub
+jupyter
+=======
 # Nepal river discharge modelling
 
 Compare standard regression models and neural networks using prepared Nepal weather and river-flow data, and explore groups of similar weather conditions.
@@ -33,3 +44,4 @@ This evaluates models on 2024/2025 validation folds and runs clustering on train
 Use the existing files in `data/frozen/` for comparable experiments. The preparation notebook can regenerate them, but doing so overwrites the shared exports. Coordinate changes with the team. The notebook now reads the repository's cleaned CSV using its ISO date format and writes exports into `data/frozen/`.
 
 The current target is log1p river discharge, not a confirmed flood label. Current features include same-day observed weather, so results describe same-day discharge estimation. Measurement provenance still needs verification.
+
