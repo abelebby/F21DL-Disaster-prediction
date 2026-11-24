@@ -1,7 +1,6 @@
 """Baseline regression and exploratory clustering on Hann's frozen features.
 
-AI assistance: implemented with ChatGPT at the user's request, 'Okay then lets
-implement', following the baseline/clustering plan discussed with the user.
+AI assistance: helped implement with ChatGPT at the user's request, following the baseline/clustering plan previously planned by the user.
 """
 import argparse
 import hashlib
