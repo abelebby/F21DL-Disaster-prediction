@@ -8,6 +8,8 @@ Created on Sun Nov  8 17:12:05 2026
 # Flood Prediction in Nepal: 1D Convolutional Neural Network (CNN)
 # --------------------------------------------------------------------------------------------
 
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,7 +28,7 @@ np.random.seed(42)
 # Data Loading and Temporal Lag Creation
 
 # Same data loading and station-chronological sorting as in the MLP
-dataFrame = pd.read_csv("nepal_flood_clean.csv")
+dataFrame = pd.read_csv(Path(__file__).resolve().parent / "data" / "processed" / "nepal_flood_clean.csv")
 dataFrame['date'] = pd.to_datetime(dataFrame['date'])
 dataFrame = dataFrame.sort_values(['location', 'date']).reset_index(drop=True)
 

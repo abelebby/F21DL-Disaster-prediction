@@ -4,7 +4,7 @@ Ablation study + error analysis on the team's FROZEN features.
 
 Task (from the frozen notebook): regression. Target y = log1p(river_discharge_m3s).
 Everything here uses the frozen files only:
-    frozen/train.csv, frozen/test.csv, frozen/cv_folds.py, frozen/feature_config.json
+    data/frozen/train.csv, data/frozen/test.csv, data/frozen/cv_folds.py, data/frozen/feature_config.json
 
 Run from the repo root:
     python3 src/ablation_error_analysis.py --frozen-dir data/frozen --results-dir results/ablation
@@ -468,8 +468,8 @@ def final_test(train, test, best, config, settings, results_dir):
 # ----------------------------------------------------------------------------
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--frozen-dir", default="frozen")
-    ap.add_argument("--results-dir", default="results")
+    ap.add_argument("--frozen-dir", default="data/frozen")
+    ap.add_argument("--results-dir", default="results/ablation")
     ap.add_argument("--baseline-dir", default="results/baselines",
                     help="Abel's outputs: selected_settings.json and validation_predictions.csv")
     ap.add_argument("--final-test", action="store_true")
