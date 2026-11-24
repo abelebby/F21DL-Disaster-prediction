@@ -3,3 +3,8 @@ kaggle.json
 __pycache__/
 .ipynb_checkpoints/
 data/raw/
+
+.mpl_cache/
+
+results/baselines/*.joblib
+.DS_Store

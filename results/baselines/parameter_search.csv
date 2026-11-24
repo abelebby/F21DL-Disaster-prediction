@@ -1,0 +1,13 @@
+model,feature_set,params,mean_rmse_log
+linear,with_discharge,{},0.14258516795314155
+tree,with_discharge,"{""max_depth"": 5, ""min_samples_leaf"": 5}",0.17158666538149905
+tree,with_discharge,"{""max_depth"": 10, ""min_samples_leaf"": 5}",0.16874160234777838
+tree,with_discharge,"{""max_depth"": null, ""min_samples_leaf"": 5}",0.16949072265358678
+forest,with_discharge,"{""n_estimators"": 100, ""min_samples_leaf"": 1}",0.150960019558079
+forest,with_discharge,"{""n_estimators"": 100, ""min_samples_leaf"": 5}",0.14625645220326472
+linear,rain_only,{},0.609942890549737
+tree,rain_only,"{""max_depth"": 5, ""min_samples_leaf"": 5}",0.6613664211978693
+tree,rain_only,"{""max_depth"": 10, ""min_samples_leaf"": 5}",0.5882253582341861
+tree,rain_only,"{""max_depth"": null, ""min_samples_leaf"": 5}",0.57737386836279
+forest,rain_only,"{""n_estimators"": 100, ""min_samples_leaf"": 1}",0.4919272967531354
+forest,rain_only,"{""n_estimators"": 100, ""min_samples_leaf"": 5}",0.4959200603012914
